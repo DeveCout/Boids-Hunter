@@ -4,7 +4,8 @@
 
 #define COS4 -0.653
 #define SIN4 -0.756
-#define ANGLE_VIEW 5
+#define ANGLE_VIEW 4
+#define SPEED_LIMIT 100
 
 /// <summary>
 /// The Boid class, used to create some group simulation

@@ -4,13 +4,13 @@
 #include "Boid.h"
 #include "Math.h"
 
-#define RATIO_COHESION_DEFAULT 100
-#define RATIO_REPULSION_DEFAULT 200
-#define RATIO_ALIGNEMENT_DEFAULT 60
+#define RATIO_COHESION_DEFAULT 3
+#define RATIO_REPULSION_DEFAULT 5
+#define RATIO_ALIGNEMENT_DEFAULT 2
 
-#define DISTANCE_VIEW_COHESION_DEFAULT 200
-#define DISTANCE_VIEW_REPULSION_DEFAULT 100
-#define DISTANCE_VIEW_ALIGNMENT_DEFAULT 150
+#define DISTANCE_VIEW_COHESION_DEFAULT 400
+#define DISTANCE_VIEW_REPULSION_DEFAULT 200
+#define DISTANCE_VIEW_ALIGNMENT_DEFAULT 300
 
 /// <summary>
 /// The manager is the object wich contain a group of boid, update each boid using other boids who are near the one we are updating
@@ -77,7 +77,7 @@ public :
 	/// Refresh the velocity of a boids using their neighbors
 	/// </summary>
 	/// <param name="index">The index of boid</param>
-	void updateVelocity(unsigned int const& index = 0);
+	void updateVelocity(unsigned int const& index = 0,sf::Time const& dt = sf::seconds(0));
 	/// <summary>
 	/// Refresh the velocity of each boids using their neighbors
 	/// </summary>

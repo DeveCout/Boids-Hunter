@@ -13,23 +13,31 @@ BoidManager::BoidManager(std::vector<Boid> const boids_):boids(boids_)
 
 BoidManager::BoidManager(unsigned int const& boidNumber, float spawningBoxSize, bool const& randomnlySpace, bool const& randomnVelocity)
 {
+	srand(time(NULL));
 	ratioAlignmentRule = RATIO_ALIGNEMENT_DEFAULT;
 	ratioCohesionRule = RATIO_COHESION_DEFAULT;
 	ratioRepulsionRule = RATIO_REPULSION_DEFAULT;
 
+	distanceViewCohesion = DISTANCE_VIEW_COHESION_DEFAULT;
+	distanceViewRepulsion = DISTANCE_VIEW_REPULSION_DEFAULT;
+	distanceViewAlignement= DISTANCE_VIEW_ALIGNMENT_DEFAULT;
+
 	angleView = ANGLE_VIEW;
 	boids = std::vector<Boid>(0);
-	if(spawningBoxSize != 0)
-	for (size_t i = 0; i < boidNumber; i++)
-	{
-		boids.push_back(Boid(sf::Vector2f((rand() * 1000) % int(spawningBoxSize * 1000) - spawningBoxSize / 2
-			                        , (rand() * 1000) % int(spawningBoxSize * 1000) - spawningBoxSize / 2),sf::Vector2f(rand()%50 - 25,rand()%50 - 25)));
-	}
+
+	if(spawningBoxSize)
+		for (size_t i = 0; i < boidNumber; i++)
+		{
+			boids.push_back(Boid(sf::Vector2f((rand() * 1000) % int(spawningBoxSize * 1000) - spawningBoxSize / 2
+											 ,(rand() * 1000) % int(spawningBoxSize * 1000) - spawningBoxSize / 2),
+				sf::Vector2f(rand()%50 - 25,rand()%50 - 25)));
+		}
 	else
-	for (size_t i = 0; i < boidNumber; i++)
-	{
-		boids.push_back(Boid());
-	}
+		for (size_t i = 0; i < boidNumber; i++)
+		{
+			boids.push_back(Boid(sf::Vector2f(0,0),
+				sf::Vector2f(rand() % 50 - 25, rand() % 50 - 25)));
+		}
 }
 
 void BoidManager::update(sf::Time const& dt)
@@ -41,7 +49,7 @@ void BoidManager::update(sf::Time const& dt)
 	}
 }
 
-void BoidManager::updateVelocity(unsigned int const& index)
+void BoidManager::updateVelocity(unsigned int const& index, sf::Time const& dt)
 {
 	/*-------------------------------------*/
 	/*--------------COHESION---------------*/
@@ -65,68 +73,95 @@ void BoidManager::updateVelocity(unsigned int const& index)
 		//Le boid ne doit se prendre en compte
 		if (index != i)
 		{
-			//----------------------------------------COHESION 
-			if (isVisible(boids[index], boids[i].getPosition(), distanceViewCohesion))
-				forcesCohesion.push_back(sf::Vector2f(boids[i].getPosition().x - boids[index].getPosition().x,
-					                                  boids[i].getPosition().y - boids[index].getPosition().y));
+			sf::Vector2f u = sf::Vector2f(boids[i].getPosition().x - boids[index].getPosition().x,
+				boids[i].getPosition().y - boids[index].getPosition().y);
 			
-			if (isVisible(boids[index], boids[i].getPosition(), distanceViewRepulsion))
-				forcesRepulsion.push_back(sf::Vector2f(boids[index].getPosition().x - boids[i].getPosition().x,
-					boids[index].getPosition().y - boids[i].getPosition().y));
+			//----------------------------------------COHESION 
+			
+			if (isVisible(boids[index], boids[i].getPosition(), distanceViewCohesion))
+			{
+				forcesCohesion.push_back((u));
+			}
 
+			//----------------------------------------REPULSION 
+
+			if (isVisible(boids[index], boids[i].getPosition(), distanceViewRepulsion))
+			{
+				forcesRepulsion.push_back(-(u));
+			}
+
+			//----------------------------------------ALIGNEMENT
 
 			if (isVisible(boids[index], boids[i].getPosition(), distanceViewAlignement))
-				forcesAlignment.push_back(sf::Vector2f(boids[i].getPosition().x - boids[index].getPosition().x,
-					boids[i].getPosition().y - boids[index].getPosition().y));
+			{
+				forcesAlignment.push_back((u));
+			}
 		}
 	}
+
 	//COHESION GLOBAL
 	for (size_t i = 0; i < forcesCohesion.size(); i++)
 	{
 		forceCohesion += forcesCohesion[i];
 	}
-	forceCohesion.x /= forcesCohesion.size();
-	forceCohesion.y /= forcesCohesion.size();
 
-	forceCohesion.x *= ratioCohesionRule;
-	forceCohesion.y *= ratioCohesionRule;
+	if (forcesCohesion.size())
+	{
+
+		forceCohesion.x /= forcesCohesion.size();
+		forceCohesion.y /= forcesCohesion.size();
+
+		forceCohesion.x *= ratioCohesionRule;
+		forceCohesion.y *= ratioCohesionRule;
+	}
 
 	//REPULSION GLOBAL
 	for (size_t i = 0; i < forcesRepulsion.size(); i++)
 	{
 		forceRepulsion += forcesRepulsion[i];
 	}
-	forceRepulsion.x /= forcesRepulsion.size();
-	forceRepulsion.y /= forcesRepulsion.size();
+	if (forcesRepulsion.size())
+	{
+		forceRepulsion.x /= forcesRepulsion.size();
+		forceRepulsion.y /= forcesRepulsion.size();
 
-	forceRepulsion.x *= ratioRepulsionRule;
-	forceRepulsion.y *= ratioRepulsionRule;
+		forceRepulsion.x *= ratioRepulsionRule;
+		forceRepulsion.y *= ratioRepulsionRule;
+	}
 
 	//ALIGNEMENT GLOBAL
 	for (size_t i = 0; i < forcesAlignment.size(); i++)
 	{
 		forceAlignment += forcesAlignment[i];
 	}
-	forceAlignment.x /= forcesAlignment.size();
-	forceAlignment.y /= forcesAlignment.size();
-
-	forceAlignment.x *= ratioAlignmentRule;
-	forceAlignment.y *= ratioAlignmentRule;
-
+	if (forcesAlignment.size())
+	{
+		forceAlignment.x /= forcesAlignment.size();
+		forceAlignment.y /= forcesAlignment.size();
+		forceAlignment.x *= ratioAlignmentRule;
+		forceAlignment.y *= ratioAlignmentRule;
+	}
+	
 	sf::Vector2f force = forceCohesion + forceRepulsion + forceAlignment;
 	
-	if(!index)
-		for (size_t i = 0; i < forcesAlignment.size(); i++)
-		{
-		}
+	if (!index)
+	{
+		std::cout << "FORCE Y : " << force.y << std::endl;
+	}
+
+	force.x *= dt.asSeconds();
+	force.y *= dt.asSeconds();
+
+
 	boids[index].applyForceVector(force);
+
 }
 
 void BoidManager::updateAllVelocities(sf::Time const& dt)
 {
 	for (size_t i = 0; i < boids.size(); i++)
 	{
-		updateVelocity(i);
+		updateVelocity(i,dt);
 	}
 }
 
@@ -220,4 +255,3 @@ sf::Vector2f BoidManager::getPosition(unsigned int const& index) const
 {
 	return boids[index].getPosition();
 }
-

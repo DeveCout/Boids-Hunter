@@ -25,16 +25,18 @@ void Boid::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	sf::Vector2f nVel2 = sf::Vector2f(COS4 * nVel.x - (-SIN4) * nVel.y, (-SIN4) * nVel.x + COS4* nVel.y);
 
 
-	triangles[0].position = position+nVel1;
-	triangles[1].position = position+nVel;
+	triangles[0].position = position + nVel1;
+	triangles[1].position = position + nVel;
 	triangles[2].position = position;
-	triangles[3].position = position+nVel2;
+	triangles[3].position = position + nVel2;
 
 	target.draw(triangles);
 }
 
 void Boid::update(sf::Time const& dt)
 {
+	position.x += velocity.x * dt.asSeconds();
+	position.y += velocity.y * dt.asSeconds();
 }
 
 sf::Vector2f Boid::getPosition() const
@@ -50,6 +52,12 @@ sf::Vector2f Boid::getVelocity() const
 void Boid::applyForceVector(sf::Vector2f const& force)
 {
 	velocity += force;
+	if (velocity.x > SPEED_LIMIT) velocity.x = SPEED_LIMIT;
+	if (velocity.y > SPEED_LIMIT) velocity.y = SPEED_LIMIT;
+
+	if (velocity.x < -SPEED_LIMIT) velocity.x = -SPEED_LIMIT;
+	if (velocity.y < -SPEED_LIMIT) velocity.y = -SPEED_LIMIT;
+
 }
 
 void Boid::setVelocity(sf::Vector2f const& vel)

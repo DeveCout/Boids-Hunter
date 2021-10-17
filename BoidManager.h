@@ -2,10 +2,15 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "Boid.h"
+#include "Math.h"
 
-#define RATIO_COHESION_DEFAULT 
-#define RATIO_REPULSION_DEFAULT 
-#define RATIO_ALIGNEMENT_DEFAULT 
+#define RATIO_COHESION_DEFAULT 100
+#define RATIO_REPULSION_DEFAULT 200
+#define RATIO_ALIGNEMENT_DEFAULT 60
+
+#define DISTANCE_VIEW_COHESION_DEFAULT 200
+#define DISTANCE_VIEW_REPULSION_DEFAULT 100
+#define DISTANCE_VIEW_ALIGNMENT_DEFAULT 150
 
 /// <summary>
 /// The manager is the object wich contain a group of boid, update each boid using other boids who are near the one we are updating
@@ -24,6 +29,25 @@ class BoidManager : public sf::Drawable
 	/// The ratio of the Alignement, the greater it is, the more the boids will align themselves with the others
 	/// </summary>
 	float ratioAlignmentRule;
+	/// <summary>
+	/// The angle of view of the boids (rad)
+	/// </summary>
+	float angleView;
+	/// <summary>
+	/// Distance of view used for cohesion rule
+	/// </summary>
+	float distanceViewCohesion;
+	/// <summary>
+	/// Distance of view used for Repulsion rule
+	/// </summary>
+	float distanceViewRepulsion;
+	/// <summary>
+	/// Distance of view used for Alignment rule
+	/// </summary>
+	float distanceViewAlignement;
+	/// <summary>
+	/// The boids array
+	/// </summary>
 	std::vector<Boid> boids;
 
 public :
@@ -66,18 +90,15 @@ public :
 	/// <param name="states">The states to draw on</param>
 	void draw(sf::RenderTarget & target, sf::RenderStates states)const;
 	/// <summary>
-	/// Return the distance between 2 point	
+	/// Return 'true' if the point can be see by a boid using a disance view and the angle view
 	/// </summary>
-	/// <param name="a">Point A</param>
-	/// <param name="b">Point B</param>
-	/// <returns>The distance between the 2 points</returns>
-	float distance(sf::Vector2f const& a, sf::Vector2f const& b);
-	/// <summary>
-	/// Return the distance between the 2 point pow(2) : it's more efficient than the distance function and still can be used to compare distance
-	/// </summary>
-	/// <param name="a">Point A</param>
-	/// <param name="b">Point B</param>
-	/// <returns>The distance^2 between the 2 point</returns>
-	float distanceP2(sf::Vector2f const& a, sf::Vector2f const& b);
+	/// <param name="b">The boids</param>
+	/// <param name="point">The point</param>
+	/// <param name="distance">The distance</param>
+	/// <returns>'true' if the boids can see the point</returns>
+	bool isVisible(Boid const& b, sf::Vector2f const& point, float const& distance)const;
+
+	bool debugIsVisible(Boid const& b, sf::Vector2f const& point, float const& distance,sf::RenderTarget & target)const;
+	sf::Vector2f getPosition(unsigned int const& index)const;
 };
 

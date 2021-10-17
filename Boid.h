@@ -4,7 +4,7 @@
 
 #define COS4 -0.653
 #define SIN4 -0.756
-#define ANGLE_VIEW 6
+#define ANGLE_VIEW 5
 
 /// <summary>
 /// The Boid class, used to create some group simulation
@@ -55,4 +55,6 @@ public :
 	/// </summary>
 	/// <param name="force">the force vector</param>
 	void applyForceVector(sf::Vector2f const& force);
+
+	void setVelocity(sf::Vector2f const& vel);
 };

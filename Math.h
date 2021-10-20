@@ -16,3 +16,5 @@ float distance(sf::Vector2f const& a, sf::Vector2f const& b);
 float det(sf::Vector2f const& a, sf::Vector2f const& b);
 
 void rotate(sf::Vector2f& a,float angle);
+
+sf::Vector2f normalize(sf::Vector2f const& a);

@@ -64,3 +64,11 @@ void rotate(sf::Vector2f& a, float angle)
 {
     a = sf::Vector2f(cos(angle) * a.x - sin(angle) * a.y, sin(angle) * a.x + cos(angle) * a.y);
 }
+
+sf::Vector2f normalize(sf::Vector2f const& a)
+{
+    float mod = sqrt(a.x * a.x + a.y * a.y);
+    if(mod)
+        return sf::Vector2f(a.x / mod,a.y / mod);
+    return sf::Vector2f(0, 0);
+}

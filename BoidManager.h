@@ -4,13 +4,13 @@
 #include "Boid.h"
 #include "Math.h"
 
-#define RATIO_COHESION_DEFAULT 3
-#define RATIO_REPULSION_DEFAULT 5
-#define RATIO_ALIGNEMENT_DEFAULT 2
+#define RATIO_COHESION_DEFAULT 30
+#define RATIO_REPULSION_DEFAULT 60
+#define RATIO_ALIGNEMENT_DEFAULT 40
 
 #define DISTANCE_VIEW_COHESION_DEFAULT 400
-#define DISTANCE_VIEW_REPULSION_DEFAULT 200
-#define DISTANCE_VIEW_ALIGNMENT_DEFAULT 300
+#define DISTANCE_VIEW_REPULSION_DEFAULT 100
+#define DISTANCE_VIEW_ALIGNMENT_DEFAULT 150
 
 /// <summary>
 /// The manager is the object wich contain a group of boid, update each boid using other boids who are near the one we are updating

@@ -28,8 +28,8 @@ BoidManager::BoidManager(unsigned int const& boidNumber, float spawningBoxSize, 
 	if(spawningBoxSize)
 		for (size_t i = 0; i < boidNumber; i++)
 		{
-			boids.push_back(Boid(sf::Vector2f((rand() * 1000) % int(spawningBoxSize * 1000) - spawningBoxSize / 2
-											 ,(rand() * 1000) % int(spawningBoxSize * 1000) - spawningBoxSize / 2),
+			boids.push_back(Boid(sf::Vector2f(((rand() % 100) / 100) * spawningBoxSize - spawningBoxSize / 2
+											 ,((rand() % 100) / 100) * spawningBoxSize  - spawningBoxSize / 2),
 				sf::Vector2f(rand()%50 - 25,rand()%50 - 25)));
 		}
 	else
@@ -111,6 +111,8 @@ void BoidManager::updateVelocity(unsigned int const& index, sf::Time const& dt)
 		forceCohesion.x /= forcesCohesion.size();
 		forceCohesion.y /= forcesCohesion.size();
 
+		forceCohesion = normalize(forceCohesion);
+
 		forceCohesion.x *= ratioCohesionRule;
 		forceCohesion.y *= ratioCohesionRule;
 	}
@@ -125,6 +127,8 @@ void BoidManager::updateVelocity(unsigned int const& index, sf::Time const& dt)
 		forceRepulsion.x /= forcesRepulsion.size();
 		forceRepulsion.y /= forcesRepulsion.size();
 
+		forceRepulsion = normalize(forceRepulsion);
+
 		forceRepulsion.x *= ratioRepulsionRule;
 		forceRepulsion.y *= ratioRepulsionRule;
 	}
@@ -138,6 +142,9 @@ void BoidManager::updateVelocity(unsigned int const& index, sf::Time const& dt)
 	{
 		forceAlignment.x /= forcesAlignment.size();
 		forceAlignment.y /= forcesAlignment.size();
+
+		forceAlignment = normalize(forceAlignment);
+
 		forceAlignment.x *= ratioAlignmentRule;
 		forceAlignment.y *= ratioAlignmentRule;
 	}
@@ -146,7 +153,8 @@ void BoidManager::updateVelocity(unsigned int const& index, sf::Time const& dt)
 	
 	if (!index)
 	{
-		std::cout << "FORCE Y : " << force.y << std::endl;
+		std::cout << "POS X : " << boids[0].getPosition().x << std::endl;
+		std::cout << "POS Y : " << boids[0].getPosition().y << std::endl;
 	}
 
 	force.x *= dt.asSeconds();
@@ -198,8 +206,6 @@ bool BoidManager::isVisible(Boid const& b, sf::Vector2f const& point,float const
 
 bool BoidManager::debugIsVisible(Boid const& b, sf::Vector2f const& point, float const& distance_, sf::RenderTarget& target) const
 {
-
-
 	sf::Vector2f polarVelocity = getPolarVector(b.getVelocity());
 	sf::Vector2f u = polarVelocity, v = polarVelocity;
 

@@ -1,5 +1,7 @@
 #include "Boid.h"
+#include "Math.h"
 #include <iostream>
+
 
 Boid::Boid(sf::Vector2f const& position_, sf::Vector2f const& velocity_):position(position_),velocity(velocity_)
 {
@@ -31,6 +33,49 @@ void Boid::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	triangles[3].position = position + nVel2;
 
 	target.draw(triangles);
+
+	//----------------------------------------------------------------DEBUG
+
+	sf::Vector2f polarVelocity = getPolarVector(velocity);
+	sf::Vector2f u = polarVelocity, v = polarVelocity;
+
+	u.x -= ANGLE_VIEW / 2;
+	v.x += ANGLE_VIEW / 2;
+
+	u = getVector(u);
+	v = getVector(v);
+
+	float distance = 400;
+
+	sf::VertexArray line(sf::PrimitiveType::LinesStrip, 3);
+	sf::VertexArray lineV(sf::PrimitiveType::LinesStrip, 2);
+
+	sf::Vector2f uPos = position + normalize(sf::Vector2f(u.x , u.y)) * distance;
+	sf::Vector2f vPos = position + normalize(sf::Vector2f(v.x, v.y)) * distance;
+
+	line[0] = sf::Vertex(uPos);
+	line[1] = sf::Vertex(position);
+	line[2] = sf::Vertex(vPos);
+
+	lineV[0] = position;
+	lineV[1] = position + normalize(sf::Vector2f(velocity.x, velocity.y)) * distance;
+
+
+	line[0].color = sf::Color::Red;
+	line[1].color = sf::Color::Red;
+	line[2].color = sf::Color::Red;
+
+	lineV[0].color = sf::Color::Green;
+	lineV[1].color = sf::Color::Green;
+
+	sf::CircleShape c;
+	c.setRadius(distance);
+	c.setPosition(sf::Vector2f(position.x - distance, position.y - distance));
+	c.setFillColor(sf::Color(255, 0, 0, 30));
+
+	target.draw(line);
+	target.draw(c);
+	target.draw(lineV);
 }
 
 void Boid::update(sf::Time const& dt)

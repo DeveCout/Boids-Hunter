@@ -5,15 +5,16 @@
 
 int main()
 {
+	srand(time(NULL));
 	sf::RenderWindow rWindow(sf::VideoMode(900,900),"Boids Hunter");
-	sf::View view = sf::View(sf::Vector2f(0,0),sf::Vector2f(1000,1000));
+	sf::View view = sf::View(sf::Vector2f(0,0),sf::Vector2f(2000,2000));
 	rWindow.setView(view);
 	sf::Event event;
 	sf::Clock clock;
 	sf::Time dt;
 	sf::Vector2f mousePos;
 	sf::Vector2i mousePosWindow;
-	BoidManager bm(20,10);
+	BoidManager bm(20,200);
 	Boid b(sf::Vector2f(0,0),sf::Vector2f(-2,4));
 	
 	//------------TEST-------
@@ -31,14 +32,11 @@ int main()
 		mousePos = rWindow.mapPixelToCoords(mousePosWindow);
 
 		dt = clock.restart();
-
 		bm.update(dt);
-		view.setCenter(b.getPosition());
 
-		if(bm.debugIsVisible(b,mousePos, 100, rWindow))
-			std::cout << rand() << std::endl;
-
-		rWindow.draw(b);
+		view.setCenter(bm.getPosition(0));
+		rWindow.draw(bm);
+		rWindow.setView(view);
 		rWindow.display();
 		rWindow.clear(sf::Color(200,200,200,255));
 	}
